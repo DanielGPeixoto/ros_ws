@@ -1,0 +1,6 @@
+std_msgs/Header header
+sensor_msgs/RelativeHumidity humidity_data
+sensor_msgs/Temperature temperature_data
+float64 radiation_data
+sensor_msgs/NavSatFix gps_data
+
