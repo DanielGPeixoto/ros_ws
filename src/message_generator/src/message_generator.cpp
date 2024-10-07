@@ -9,8 +9,8 @@
 #include <algorithm> 
 
 float generateRandomValue(float mean, float variance) {
-    static std::default_random_engine generator(std::time(0)); // Seed with current time
-    std::normal_distribution<float> distribution(mean, std::sqrt(variance)); // Standard deviation is sqrt(variance)
+    static std::default_random_engine generator(std::time(0)); 
+    std::normal_distribution<float> distribution(mean, std::sqrt(variance)); 
     
     float random_value = distribution(generator);
     

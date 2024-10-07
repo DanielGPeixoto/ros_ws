@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(message_generator)
 
 ## Find catkin and any catkin packages
