@@ -25,14 +25,14 @@ int main(int argc, char **argv)
         msg.header.stamp = ros::Time::now();
 
         // Generate random sensor data
-        msg.radiation_data = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 1.0;  // Radiation between 0 and 1
-        msg.humidity_data.header.stamp = ros::Time::now();  // Set humidity timestamp
-        msg.humidity_data.relative_humidity = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 100.0;  // Humidity between 0 and 100
-        msg.humidity_data.variance = 0;  // Fixed variance
+        msg.radiation_data = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 1.0;
+        msg.humidity_data.header.stamp = ros::Time::now();
+        msg.humidity_data.relative_humidity = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 100.0; 
+        msg.humidity_data.variance = 0;
 
-        msg.temperature_data.header.stamp = ros::Time::now();  // Set temperature timestamp
-        msg.temperature_data.temperature = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 30.0;  // Temperature between 0 and 30
-        msg.temperature_data.variance = 0;  // Fixed variance
+        msg.temperature_data.header.stamp = ros::Time::now();
+        msg.temperature_data.temperature = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 30.0;
+        msg.temperature_data.variance = 0;
 
         msg.gps_data.header.stamp = ros::Time::now();  // Set GPS timestamp
         msg.gps_data.latitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 180.0 - 90.0;  // Latitude between -90 and 90
