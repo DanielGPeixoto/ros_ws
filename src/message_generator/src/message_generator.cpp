@@ -1,24 +1,11 @@
+
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "message_generator/sensor_messages.h"
 #include "sensor_msgs/RelativeHumidity.h"
 #include "sensor_msgs/Temperature.h"
 #include "sensor_msgs/NavSatFix.h"
-#include <random> 
-#include <ctime> 
-#include <algorithm> 
-
-float generateRandomValue(float mean, float variance) {
-    static std::default_random_engine generator(std::time(0)); 
-    std::normal_distribution<float> distribution(mean, std::sqrt(variance)); 
-    
-    float random_value = distribution(generator);
-    
-    if (mean == 50.0) { 
-        return std::max(0.0f, std::min(100.0f, random_value));
-    }
-    return random_value; 
-}
+#include <ctime>
 
 int main(int argc, char **argv)
 {
@@ -29,16 +16,7 @@ int main(int argc, char **argv)
 
     ros::Rate loop_rate(10);
 
-    std::srand(std::time(0));
-
-    float humidity_mean = 50.0;  
-    float humidity_variance = 70.0; 
-
-    float temperature_mean = 25.0;  
-    float temperature_variance = 20.0; 
-
-    float radiation_mean = 0.1;  
-    float radiation_variance = 0.05; 
+    std::srand(std::time(0));  // Seed for random generator
 
     while (ros::ok())
     {
@@ -46,23 +24,30 @@ int main(int argc, char **argv)
 
         msg.header.stamp = ros::Time::now();
 
-        msg.humidity_data.relative_humidity = generateRandomValue(humidity_mean, humidity_variance);
-        msg.humidity_data.variance = humidity_variance;  
+        // Generate random sensor data
+        msg.radiation_data = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 1.0;  // Radiation between 0 and 1
+        msg.humidity_data.header.stamp = ros::Time::now();  // Set humidity timestamp
+        msg.humidity_data.relative_humidity = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 100.0;  // Humidity between 0 and 100
+        msg.humidity_data.variance = 0;  // Fixed variance
 
-        msg.temperature_data.temperature = generateRandomValue(temperature_mean, temperature_variance);
-        msg.temperature_data.variance = temperature_variance;  
+        msg.temperature_data.header.stamp = ros::Time::now();  // Set temperature timestamp
+        msg.temperature_data.temperature = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 30.0;  // Temperature between 0 and 30
+        msg.temperature_data.variance = 0;  // Fixed variance
 
-        msg.radiation_data = generateRandomValue(radiation_mean, radiation_variance);
+        msg.gps_data.header.stamp = ros::Time::now();  // Set GPS timestamp
+        msg.gps_data.latitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 180.0 - 90.0;  // Latitude between -90 and 90
+        msg.gps_data.longitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 360.0 - 180.0;  // Longitude between -180 and 180
+        msg.gps_data.altitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 1000.0;  // Altitude between 0 and 1000
 
-        msg.gps_data.latitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 180.0 - 90.0; 
-        msg.gps_data.longitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 360.0 - 180.0;
-        msg.gps_data.altitude = static_cast<double>(rand()) / static_cast<double>(RAND_MAX) * 1000.0; 
-
-        ROS_INFO("Timestamp: %f, Humidity: %f, Temperature: %f, Radiation: %f, Latitude: %f, Longitude: %f, Altitude: %f",
+        // Log the values with timestamps
+        ROS_INFO("Timestamp: %f, Radiation: %f, HumidityTimeStamp: %f, Humidity: %f, TemperatureTimeStamp: %f, Temperature: %f, GPSTimeStamp: %f, Latitude: %f, Longitude: %f, Altitude: %f",
                  msg.header.stamp.toSec(),
-                 msg.humidity_data.relative_humidity,
-                 msg.temperature_data.temperature,
                  msg.radiation_data,
+                 msg.humidity_data.header.stamp.toSec(),
+                 msg.humidity_data.relative_humidity,
+                 msg.temperature_data.header.stamp.toSec(),
+                 msg.temperature_data.temperature,
+                 msg.gps_data.header.stamp.toSec(),
                  msg.gps_data.latitude,
                  msg.gps_data.longitude,
                  msg.gps_data.altitude);
