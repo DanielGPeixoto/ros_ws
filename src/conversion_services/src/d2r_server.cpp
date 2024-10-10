@@ -1,9 +1,7 @@
-// src/d2r_server.cpp
 #include "ros/ros.h"
 #include "conversion_services/d2r.h"
-// Function to convert degrees to radians
 double d2r(double degrees) {
-    return degrees * (M_PI / 180.0);
+    return (degrees / 180.0) * M_PI;
 }
 
 bool handleD2R(conversion_services::d2r::Request &req,
@@ -17,7 +15,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
 
     ros::ServiceServer service = n.advertiseService("d2r", handleD2R);
-    ROS_INFO("Ready to convert degrees to radians.");
+    ROS_INFO("Convert degrees to radians.");
     ros::spin();
 
     return 0;

@@ -1,14 +1,13 @@
 #include "ros/ros.h"
 #include "conversion_services/r2d.h"
 
-// Function to convert radians to degrees
 double r2d(double radians) {
-    return radians * (180.0 / M_PI);
+    return (radians / M_PI) * 180.0;
 }
 
 bool handleR2D(conversion_services::r2d::Request &req,
                conversion_services::r2d::Response &res) {
-    res.degrees = r2d(req.radians);  // Call your own conversion function
+    res.degrees = r2d(req.radians);  
     return true;
 }
 
@@ -17,7 +16,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
 
     ros::ServiceServer service = n.advertiseService("r2d", handleR2D);
-    ROS_INFO("Ready to convert radians to degrees.");
+    ROS_INFO("Convert radians to degrees.");
     ros::spin();
 
     return 0;
