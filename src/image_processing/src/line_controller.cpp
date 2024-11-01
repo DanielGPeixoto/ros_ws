@@ -2,6 +2,7 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Float64.h"
+#include "std_srvs/SetBool.h"  // Include for service to enable/disable PID
 #include <chrono>  // Include for time tracking
 
 // Initialize PID parameters with default values
@@ -20,7 +21,26 @@ double integral = 0.0;
 ros::Time last_time;  // Variable to hold the last time when the error was calculated
 ros::Publisher motor_cmd_pub;
 
+bool pid_enabled = true;  // Flag to enable/disable PID control
+
+// Service callback to toggle PID control
+bool togglePID(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
+    pid_enabled = req.data;  // Enable or disable PID control based on request
+    res.success = true;
+    res.message = pid_enabled ? "PID enabled" : "PID disabled";
+    return true;
+}
+
 void errorCallback(const std_msgs::Float64::ConstPtr& error_msg) {
+
+    if (!pid_enabled) {
+        // Stop movement if PID is disabled
+        geometry_msgs::Twist stop_cmd;
+        stop_cmd.linear.x = 0.0;
+        stop_cmd.angular.z = 0.0;
+        motor_cmd_pub.publish(stop_cmd);
+        return;
+    }
     // Get current time
     ros::Time current_time = ros::Time::now();
     double dt = (current_time - last_time).toSec();  // Calculate time difference in seconds
@@ -64,6 +84,7 @@ int main(int argc, char** argv) {
     // Publisher and subscriber setup
     motor_cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);
     ros::Subscriber error_sub = nh.subscribe("line_error", 10, errorCallback);
+    ros::ServiceServer service = nh.advertiseService("toggle_pid_control", togglePID);
 
     // Initialize last_time to the current time
     last_time = ros::Time::now();

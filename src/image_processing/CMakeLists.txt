@@ -137,6 +137,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(image_processing_node src/image_processing_node.cpp)
 add_executable(line_controller_node src/line_controller.cpp)
+add_executable(color_controller_node src/color_controller_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -153,6 +154,10 @@ add_executable(line_controller_node src/line_controller.cpp)
    ${catkin_LIBRARIES}
  )
 target_link_libraries(line_controller_node
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(color_controller_node
   ${catkin_LIBRARIES}
 )
 
@@ -176,7 +181,7 @@ target_link_libraries(line_controller_node
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 ## Install executables
-install(TARGETS image_processing_node line_controller_node
+install(TARGETS image_processing_node line_controller_node color_controller_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
