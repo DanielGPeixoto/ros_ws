@@ -1,39 +1,33 @@
-
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_srvs/SetBool.h"
 #include <chrono>
 
 ros::ServiceClient toggle_pid_client;
-ros::Time last_red_detection_time;  // To track when red was last detected
-ros::Time last_green_detection_time;  // To track when red was last detected
-ros::Time last_blue_detection_time;  // To track when red was last detected
-double color_cooldown = 1.0;        // Cooldown period in seconds
+ros::Time last_red_detection_time;
+ros::Time last_green_detection_time;
+ros::Time last_blue_detection_time;
+double color_cooldown = 1.0;
 
 void colorCallback(const std_msgs::String::ConstPtr& color_msg) {
     std::string detected_color = color_msg->data;
     ros::Time current_time = ros::Time::now();
     ROS_INFO_STREAM("Colors: " << detected_color);
 
-    // Check if red color is detected and if cooldown has passed
      if (detected_color.find("Red") != std::string::npos && (current_time - last_red_detection_time).toSec() >= color_cooldown) {
         ROS_INFO("Red color detected! Pausing line following...");
 
-        // Update last detection time for red
         last_red_detection_time = current_time;
 
-        // Call the toggle service to stop the line follower
         std_srvs::SetBool srv;
-        srv.request.data = false;  // Disable PID
+        srv.request.data = false;  
 
         if (toggle_pid_client.call(srv)) {
             ROS_INFO("Line following paused successfully.");
 
-            // Wait for 1 second
             ros::Duration(1.0).sleep();
 
-            // Resume line following
-            srv.request.data = true;  // Enable PID
+            srv.request.data = true;  
             if (toggle_pid_client.call(srv)) {
                 ROS_INFO("Line following resumed.");
             } else {
@@ -44,25 +38,20 @@ void colorCallback(const std_msgs::String::ConstPtr& color_msg) {
         }
     }
 
-    // Check if red color is detected and if cooldown has passed
      if (detected_color.find("Blue") != std::string::npos && (current_time - last_blue_detection_time).toSec() >= color_cooldown) {
         ROS_INFO("Blue color detected! Pausing line following...");
 
-        // Update last detection time for red
         last_red_detection_time = current_time;
 
-        // Call the toggle service to stop the line follower
         std_srvs::SetBool srv;
-        srv.request.data = false;  // Disable PID
+        srv.request.data = false;  
 
         if (toggle_pid_client.call(srv)) {
             ROS_INFO("Line following paused successfully.");
 
-            // Wait for 1 second
             ros::Duration(2.0).sleep();
 
-            // Resume line following
-            srv.request.data = true;  // Enable PID
+            srv.request.data = true;  
             if (toggle_pid_client.call(srv)) {
                 ROS_INFO("Line following resumed.");
             } else {
@@ -73,25 +62,20 @@ void colorCallback(const std_msgs::String::ConstPtr& color_msg) {
         }
     }
 
-    // Check if red color is detected and if cooldown has passed
      if (detected_color.find("Green") != std::string::npos && (current_time - last_green_detection_time).toSec() >= color_cooldown) {
         ROS_INFO("Green color detected! Pausing line following...");
 
-        // Update last detection time for red
         last_red_detection_time = current_time;
 
-        // Call the toggle service to stop the line follower
         std_srvs::SetBool srv;
-        srv.request.data = false;  // Disable PID
+        srv.request.data = false;  
 
         if (toggle_pid_client.call(srv)) {
             ROS_INFO("Line following paused successfully.");
 
-            // Wait for 1 second
             ros::Duration(3.0).sleep();
 
-            // Resume line following
-            srv.request.data = true;  // Enable PID
+            srv.request.data = true;  
             if (toggle_pid_client.call(srv)) {
                 ROS_INFO("Line following resumed.");
             } else {
@@ -109,13 +93,10 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "color_controller_node");
     ros::NodeHandle nh;
 
-    // Service client setup
     toggle_pid_client = nh.serviceClient<std_srvs::SetBool>("toggle_pid_control");
 
-    // Subscriber to detected colors
     ros::Subscriber color_sub = nh.subscribe("detected_colors", 10, colorCallback);
 
-    // Initialize last_red_detection_time to allow immediate detection
     last_red_detection_time = ros::Time::now() - ros::Duration(color_cooldown);
 
     ROS_INFO("Color Controller Node started...");
